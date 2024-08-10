@@ -1,7 +1,7 @@
-import { View, Text, ActivityIndicator, ScrollView } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { useLocalSearchParams } from 'expo-router'
-import { collection, getDoc, query, where } from 'firebase/firestore';
+import { View, Text, ActivityIndicator, ScrollView, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useLocalSearchParams } from 'expo-router';
+import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../configs/FirebaseConfig';
 import { Colors } from '../../constants/Colors';
 import Intro from '../../components/BusinessDetail/Intro';
@@ -11,39 +11,33 @@ import Reviews from '../../components/BusinessDetail/Reviews';
 
 
 export default function BusinessDetail() {
-
-    const [business , setBusiness] = useState();
-    const [loading , setLoading] = useState(false);
-
-    const {businessid} = useLocalSearchParams();
+    const [business, setBusiness] = useState();
+    const [loading, setLoading] = useState(false);
+    const { businessid } = useLocalSearchParams();
 
     useEffect(() => {
         GetBusinessDetailById();
-    } , [])
+    }, []);
 
-    // used to get business detail by id
-    const GetBusinessDetailById = async() => {
-
+    const GetBusinessDetailById = async () => {
         setLoading(true);
-
-        const docRef = doc(db , 'BusinessList' , businessid);
+        const docRef = doc(db, 'BusinessList', businessid);
         const docSnap = await getDoc(docRef);
 
-        if(docSnap.exists())
-        {
-            setBusiness({id:docSnap.id , ...docSnap.data()});
-            setLoading(false);
-        }
-        else
-        {
+        if (docSnap.exists()) {
+            setBusiness({ id: docSnap.id, ...docSnap.data() });
+        } else {
             console.log("No such document!");
-            setLoading(false);
         }
+        setLoading(false);
+    };
+
+    if (loading) {
+        return <ActivityIndicator size="large" color={Colors.PRIMARY} style={{ marginTop: '70%' }} />;
     }
 
-  return (
-
-    <ScrollView>
+    return (
+        <ScrollView>
         
         {loading ? 
             <ActivityIndicator size={'large'} color={Colors.PRIMARY} style={{marginTop:'70%'}} /> :
@@ -64,5 +58,5 @@ export default function BusinessDetail() {
         }
       
     </ScrollView>
-  )
+    );
 }

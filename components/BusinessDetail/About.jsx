@@ -7,7 +7,7 @@ export default function About({business}) {
     <View style={{
         padding:20,
         backgroundColor:'#fff',
-        height:'100%'
+        //height:'100%'
     }}>
 
       <Text style={{

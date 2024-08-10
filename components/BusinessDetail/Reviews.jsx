@@ -2,34 +2,42 @@ import { View, Text, TextInput, TouchableOpacity, ToastAndroid, Image } from 're
 import React, { useState } from 'react'
 import { Rating } from 'react-native-ratings'
 import { Colors } from '../../constants/Colors';
+import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../configs/FirebaseConfig';
-import { arrayUnion, updateDoc } from 'firebase/firestore';
 import { useUser } from '@clerk/clerk-expo';
 
 export default function Reviews({business}) {
 
     const [rating , setRating] = useState(4);
-    const [userInput , setUserInput] = useState();
+    const [userInput , setUserInput] = useState('');
     const {user} = useUser();
 
-    const onSubmit = async() => {
 
-        const docRef = doc(db , 'BusinessList' , business?.id);
+    const onSubmit = async () => {
 
-        await updateDoc(docRef , {
-            reviews:arrayUnion({
-                rating:rating,
-                comment:userInput,
-                userName:user?.fullName,
-                userImage:user?.imageUrl,
-                userEmail:user?.primaryEmailAddress?.emailAddress
-            })
-        })
+        try {
+          const docRef = doc(db, 'BusinessList', business?.id);
+          await updateDoc(docRef, {
+            reviews: arrayUnion({
+              rating: rating,
+              comment: userInput,
+              userName: user?.fullName,
+              userImage: user?.imageUrl,
+              userEmail:user?.primaryEmailAddress?.emailAddress
+            }),
+          });
 
-        ToastAndroid.show('Comment Added Successfully !' , ToastAndroid.BOTTOM)
-    }
+          ToastAndroid.show('Comment Added Successfully!', ToastAndroid.BOTTOM);
+          setUserInput('');  // Clear the input after submission
+
+        } catch (error) {
+          console.error("Error adding review: ", error);
+          ToastAndroid.show('Failed to add comment. Try again later.', ToastAndroid.BOTTOM);
+        }
+      };
 
   return (
+
     <View style={{
         padding:20,
         backgroundColor:'#fff'
@@ -52,7 +60,7 @@ export default function Reviews({business}) {
         <TextInput 
             placeholder='Write your comment...'
             numberOfLines={4}
-            onChangeText={(value) => setUserInput(value)}
+            onChangeText={(text) => setUserInput(text)}
             style={{
                 borderWidth:1,
                 padding:10,
@@ -64,7 +72,7 @@ export default function Reviews({business}) {
 
         <TouchableOpacity 
             disabled={!userInput}
-            onPress={() => onSubmit()}
+            onPress={onSubmit}
             style={{
                 padding:10,
                 backgroundColor:Colors.PRIMARY,
@@ -84,10 +92,10 @@ export default function Reviews({business}) {
       </View>
 
 
-      {/* Display Previous Reviews */}
-      
+      {/* Display previous reviews */}
       <View>
-            {business.reviews.map((item , index) => (
+
+            {business?.reviews?.map((item , index) => (
 
                 <View style={{
                     display:'flex',
@@ -100,6 +108,7 @@ export default function Reviews({business}) {
                     borderRadius:15,
                     marginTop:10
                 }}>
+
                     <Image source={{uri : item.userImage}} 
                         style={{
                             width:50,
@@ -108,21 +117,17 @@ export default function Reviews({business}) {
                         }} 
                     />
 
-                    <View style={{
-                        display:'flex',
-                        gap:5
-                    }}>
+                    <View style={{display:'flex' , gap:5}}>
 
                         <Text style={{
                             fontFamily:'outfit-medium'
                         }}>{item.userName}</Text>
 
-                        <Rating 
+                        <Rating
                             imageSize={20}
-                            ratingCount={item.rating} 
-                            style={{
-                                alignItems:'flex-start'
-                            }}
+                            readonly
+                            startingValue={item.rating}
+                            style={{alignItems:'flex-start'}}
                         />
 
                         <Text>{item.comment}</Text>
@@ -131,6 +136,7 @@ export default function Reviews({business}) {
 
                 </View>
             ))}
+
       </View>
 
     </View>

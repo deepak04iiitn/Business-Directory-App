@@ -12,7 +12,9 @@ export default function profile() {
 
       <Text style={{
           fontFamily:'outfit-bold',
-          fontSize:35
+          fontSize:35,
+          textAlign:'center',
+          marginTop:20
       }}>Profile</Text>
 
       {/* User Info */}

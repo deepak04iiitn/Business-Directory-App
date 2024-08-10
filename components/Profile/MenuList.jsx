@@ -1,6 +1,7 @@
-import { View, Text, FlatList, Image } from 'react-native'
+import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Colors } from '../../constants/Colors'
+import { useRouter } from 'expo-router'
 
 export default function MenuList() {
 
@@ -9,12 +10,12 @@ export default function MenuList() {
             id:1,
             name:'Add Business',
             icon:require('./../../assets/images/add.jpg'),
-            path:''
+            path:'/business/add-business'
         },
         {
             id:2,
             name:'My Business',
-            icon:require('./../../assets/images/mybusiness.jpg'),
+            icon:require('./../../assets/images/mybusiness1.jpg'),
             path:''
         },
         {
@@ -32,10 +33,18 @@ export default function MenuList() {
 
     ]
 
+
+    const router = useRouter();
+
+    const onMenuClick = (item) => {
+        router.push(item.path)
+    }
+    
+
   return (
 
     <View style={{
-        marginTop:50
+        marginTop:60
     }}>
       
         <FlatList
@@ -44,19 +53,22 @@ export default function MenuList() {
             numColumns={2}
             renderItem={({item , index}) => (
 
-                <View style={{
-                    display:'flex',
-                    flexDirection:'row',
-                    alignItems:'center',
-                    gap:10,
-                    flex:1,
-                    padding:10,
-                    borderRadius:15,
-                    borderWidth:1,
-                    margin:10,
-                    backgroundColor:'#fff',
-                    borderColor:Colors.PRIMARY
-                }}>
+                <TouchableOpacity 
+                    onPress={() => onMenuClick(item)}
+                    style={{
+                        display:'flex',
+                        flexDirection:'row',
+                        alignItems:'center',
+                        gap:10,
+                        flex:1,
+                        padding:10,
+                        borderRadius:15,
+                        borderWidth:1,
+                        margin:10,
+                        backgroundColor:'#fff',
+                        borderColor:Colors.PRIMARY
+                    }}
+                >
 
                     <Image source={item.icon}
                         style={{
@@ -71,7 +83,7 @@ export default function MenuList() {
                         flex:1
                     }}>{item.name}</Text>
 
-                </View>
+                </TouchableOpacity>
             )} 
         />
 

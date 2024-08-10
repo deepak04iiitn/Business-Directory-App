@@ -12,7 +12,7 @@ export default function UserIntro() {
         display:'flex',
         justifyContent:'center',
         alignItems:'center',
-        marginTop:30
+        marginTop:40
     }}>
 
         <Image source={{uri : user?.imageUrl}} 
